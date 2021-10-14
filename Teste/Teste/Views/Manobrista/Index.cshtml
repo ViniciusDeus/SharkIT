@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Model.Manobrista>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Manobrista</h2>
+    </div>
+
+    <div class="col-md-6">
+        <a href="@Url.Action("Create","Manobrista")" class="btn btn-success pull-right h2">
+            <i class="glyphicon glyphicon-plus"></i> Novo Manobrista
+        </a>
+    </div>
+</div>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.cpf)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.nome)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.cpf)
+    </td>
+
+    <td>
+        <a href="@Url.Action("Edit", "Manobrista", new { id=item.idManobrista})">
+            <i class="glyphicon glyphicon-edit"></i>
+        </a>
+        |
+        <a href="#" onclick="deletar(this,@item.idManobrista)">
+            <i style="color:red" class="glyphicon glyphicon-trash"></i>
+        </a>
+    </td>
+</tr>
+    }
+
+</table>
+
+<div class="modal fade" id="modalDeletarManobrista" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Exclusão do Manobrista</h4>
+            </div>
+
+            <div class="modal-body">
+                <p>Deseja realmente excluir este Manobrista?</p>
+                <p></p>
+                <p class="">
+                    <span style="color:red" id="spnExclusaoNome"></span>
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <input type="hidden" id="idExclusaoManobrista" name="idExclusaoManobrista" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger btn-ok" onclick="excluirManobrista();" data-dismiss="modal">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("#tblManobrista").dataTable({
+            "language":
+            {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                },
+                "select": {
+                    "rows": {
+                        "_": "Selecionado %d linhas",
+                        "0": "Nenhuma linha selecionada",
+                        "1": "Selecionado 1 linha"
+                    }
+                },
+                "buttons": {
+                    "copy": "Copiar para a área de transferência",
+                    "copyTitle": "Cópia bem sucedida",
+                    "copySuccess": {
+                        "1": "Uma linha copiada com sucesso",
+                        "_": "%d linhas copiadas com sucesso"
+                    }
+                }
+            }
+        }
+        );
+    });
+
+    function deletar(obj,id) {
+        $("#idExclusaoManobrista").val(id);
+        $("#spnExclusaoNome").text($("#spnNome_" + id).text());
+
+        $('#modalDeletarManobrista').modal({ show: true });
+    }
+    function excluirManobrista() {
+        $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Delete")',
+                dataType: 'json',
+                data: {
+                    id: $("#idExclusaoManobrista").val(),
+                },
+                success: function (data) {
+                    $("#tr_" + $("#idExclusaoManobrista").val()).remove();
+                },
+                error: function (ex) {
+                    alert("Ocorreu um erro inesperado, entre em contato com o administrador.");
+                }
+            });
+            return false;
+    }
+</script>

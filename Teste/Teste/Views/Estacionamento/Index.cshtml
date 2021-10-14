@@ -1,0 +1,155 @@
+﻿@model IEnumerable<Model.Estacionamento>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Estacionamento</h2>
+    </div>
+
+    <div class="col-md-6">
+        <a href="@Url.Action("Create","Estacionamento")" class="btn btn-success pull-right h2">
+            <i class="glyphicon glyphicon-plus"></i> Entrada Estacionamento
+        </a>
+    </div>
+</div>
+<table  id="tblEstacionamento" class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.idEstacionamento)
+        </th>
+        <th>
+            @Html.DisplayName("Data Entrada")
+        </th>
+        <th>
+            @Html.DisplayName("Data Saída")
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.idEstacionamento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.dtEntrada)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.dtSaida)
+            </td>
+            <td>
+                <a href="@Url.Action("Saida", "Carro", new { id=item.idEstacionamento})">
+                    <i class="glyphicon glyphicon-edit"></i>
+                </a>
+                |
+                <a href="#" onclick="deletar(this,@item.idEstacionamento)">
+                    <i style="color:red" class="glyphicon glyphicon-trash"></i>
+                </a>
+            </td>
+        </tr>
+    }
+
+</table>
+
+
+
+<div class="modal fade" id="modalDeletarEstacionamento" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Exclusão </h4>
+            </div>
+
+            <div class="modal-body">
+                <p>Deseja realmente excluir este registro?</p>
+                <p></p>
+                <p class="">
+                    <span style="color:red" id="spnExclusaoEstacionamento"></span>
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <input type="hidden" id="idExclusaoEstacionamento" name="idExclusaoEstacionamento" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger btn-ok" onclick="excluirEstacionamento();" data-dismiss="modal">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("#tblEstacionamento").dataTable({
+            "language":
+            {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                },
+                "select": {
+                    "rows": {
+                        "_": "Selecionado %d linhas",
+                        "0": "Nenhuma linha selecionada",
+                        "1": "Selecionado 1 linha"
+                    }
+                },
+                "buttons": {
+                    "copy": "Copiar para a área de transferência",
+                    "copyTitle": "Cópia bem sucedida",
+                    "copySuccess": {
+                        "1": "Uma linha copiada com sucesso",
+                        "_": "%d linhas copiadas com sucesso"
+                    }
+                }
+            }
+        }
+        );
+    });
+
+    function deletar(obj,id) {
+        $("#idExclusaoEstacionamento").val(id);
+        $("#spnExclusaoEstacionamento").text($("#spnNome_" + id).text());
+
+        $('#modalDeletarEstacionamento').modal({ show: true });
+    }
+    function excluirUsuario() {
+        $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Delete")',
+                dataType: 'json',
+                data: {
+                    id: $("#idExclusaoEstacionamento").val(),
+                },
+                success: function (data) {
+                    $("#tr_" + $("#idExclusaoEstacionamento").val()).remove();
+                },
+                error: function (ex) {
+                    alert("Ocorreu um erro inesperado, entre em contato com o administrador.");
+                }
+            });
+            return false;
+    }
+</script>

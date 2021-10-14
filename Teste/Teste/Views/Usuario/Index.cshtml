@@ -1,0 +1,174 @@
+﻿@model IEnumerable<Model.Usuario>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Usuários</h2>
+    </div>
+
+    <div class="col-md-6">
+        <a href="@Url.Action("Create","Usuario")" class="btn btn-success pull-right h2">
+            <i class="glyphicon glyphicon-plus"></i> Novo Usuário
+        </a>
+    </div>
+</div>
+
+
+
+<table id="tblUsuarios" class="row-border">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Telefone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Cpf)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Endereco)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="tr_@item.Id">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Telefone)
+                </td>
+                <td>
+                    <span id="spnNome_@item.Id"> @Html.DisplayFor(modelItem => item.Nome)</span>
+                   
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cpf)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Endereco)
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", "Usuario", new { id=item.Id})">
+                        <i class="glyphicon glyphicon-edit"></i>
+                    </a>
+                    |
+                    <a href="#" onclick="deletar(this,@item.Id)">
+                        <i style="color:red" class="glyphicon glyphicon-trash"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div class="modal fade" id="modalDeletarUsuario" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Exclusão de Usuário</h4>
+            </div>
+
+            <div class="modal-body">
+                <p>Deseja realmente excluir este usuário?</p>
+                <p></p>
+                <p class="">
+                    <span style="color:red" id="spnExclusaoNomeUsuario"></span>
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <input type="hidden" id="idExclusaoUsuario" name="idExclusaoUsuario" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger btn-ok" onclick="excluirUsuario();" data-dismiss="modal">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#tblUsuarios").dataTable({
+            "language":
+            {
+                "sEmptyTable": "Nenhum registro encontrado",
+                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "_MENU_ resultados por página",
+                "sLoadingRecords": "Carregando...",
+                "sProcessing": "Processando...",
+                "sZeroRecords": "Nenhum registro encontrado",
+                "sSearch": "Pesquisar",
+                "oPaginate": {
+                    "sNext": "Próximo",
+                    "sPrevious": "Anterior",
+                    "sFirst": "Primeiro",
+                    "sLast": "Último"
+                },
+                "oAria": {
+                    "sSortAscending": ": Ordenar colunas de forma ascendente",
+                    "sSortDescending": ": Ordenar colunas de forma descendente"
+                },
+                "select": {
+                    "rows": {
+                        "_": "Selecionado %d linhas",
+                        "0": "Nenhuma linha selecionada",
+                        "1": "Selecionado 1 linha"
+                    }
+                },
+                "buttons": {
+                    "copy": "Copiar para a área de transferência",
+                    "copyTitle": "Cópia bem sucedida",
+                    "copySuccess": {
+                        "1": "Uma linha copiada com sucesso",
+                        "_": "%d linhas copiadas com sucesso"
+                    }
+                }
+            }
+        }
+        );
+    });
+
+    function deletar(obj,id) {
+        $("#idExclusaoUsuario").val(id);
+        $("#spnExclusaoNomeUsuario").text($("#spnNome_" + id).text());
+        debugger;
+
+        $('#modalDeletarUsuario').modal({ show: true });
+    }
+    function excluirUsuario() {
+        $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Delete")',
+                dataType: 'json',
+                data: {
+                    id: $("#idExclusaoUsuario").val(),
+                },
+                success: function (data) {
+                    $("#tr_" + $("#idExclusaoUsuario").val()).remove();
+                },
+                error: function (ex) {
+                    alert("Ocorreu um erro inesperado, entre em contato com o administrador.");
+                }
+            });
+            return false;
+    }
+</script>

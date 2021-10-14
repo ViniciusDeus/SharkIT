@@ -1,0 +1,74 @@
+﻿@model Model.Estacionamento
+
+@{
+    ViewBag.Title = "Create";
+
+
+    var ddlManobrista = ViewData["ddlManobrista"] != null ? (List<Model.Manobrista>)ViewData["ddlManobrista"] : new List<Model.Manobrista>();
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Estacionamento</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.dtEntrada,"Data Entrada:", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="datetime" asp-for="model.dtEntrada" id="dtEntrada" name="dtEntrada" class="control-label col-md-3" />
+
+                @Html.ValidationMessageFor(model => model.dtEntrada, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.Label("Manobrista: ", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <select asp-for="idManobristaEntrada" id="idManobristaEntrada" name="idManobristaEntrada" style="width:250px; height:30px;">
+                    <option value="0">  </option>
+                    @{ foreach (var manobrista in ddlManobrista)
+                        {
+                            <option value="@manobrista.idManobrista">@manobrista.nome</option>
+                        } }
+                </select>
+            </div>
+
+        </div>
+
+
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Gravar" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+}
+
+<div id="top" class="row">
+    <div class="col-md-12">
+        <a href="@Url.Action("Index", "Estacionamento")" class="btn btn-info pull-right h2">
+            <i class="glyphicon glyphicon-backward"></i> Voltar
+        </a>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('.datepicker').datepicker({
+            dateFormat: "DD/MM/YYYY"
+        });
+    })
+
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
